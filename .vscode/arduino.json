@@ -3,5 +3,5 @@
     "board": "arduino:avr:nano",
     "programmer": "arduino:avrisp",
     "configuration": "cpu=atmega328old",
-    "sketch": "CB_Simulator\\CB_Simulator.ino"
+    "sketch": "BaySimulator.ino"
 }
