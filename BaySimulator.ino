@@ -21,13 +21,54 @@ const uint8_t CB_state = 14;
 const uint8_t CB_ready = 15; 
 
 
-class CircuitBraker {
+class CircuitBraker  {
+ 
+  public:
 
-char State;
-int  MotorTime;
+  //Constructor
+  CircuitBraker (uint8_t clCmd, uint8_t opCmd, uint8_t state, uint8_t ready){
 
+    _closeCmdPin = clCmd; //Pass close command pin
+    _openCmdPin = opCmd; //Pass open comand pin
+    _statePin = state; //Pass state pin
+    _ReadyPin = ready; //Pass cb ready pin 
+    _MotorTime = 0; //Clear motor timer 
 
+  }
+
+  void Monitoring(){
+
+    // Close command execute
+    if (!digitalRead(_closeCmdPin) & digitalRead(_ReadyPin) & digitalRead(_openCmdPin)){
+      digitalWrite(_statePin, HIGH);
+      _MotorTime = 0;    
+    } 
+
+    //Open command execute
+    if (!digitalRead(_openCmdPin))
+      digitalWrite(_statePin, LOW); 
+
+    //Incrase motor counter if cb is discharged
+    if (_MotorTime <= 10000)
+      _MotorTime ++;
+
+    //If timers reach charge time set cb ready high
+    if (_MotorTime > 10000)
+      digitalWrite(_ReadyPin, HIGH);
+    else
+      digitalWrite(_ReadyPin, LOW);
+
+  } 
+
+  private:
+
+    uint8_t _closeCmdPin, _openCmdPin, _statePin, _ReadyPin;
+    double  _MotorTime;
+
+    
 };
+
+CircuitBraker CB1(CB_closeCmd,CB_openCmd,CB_state,CB_ready);
 
 // SETUP INICIALISATION
 void setup() {
@@ -45,19 +86,15 @@ void setup() {
   /* Off All switches and circuit braker */
   digitalWrite(CB_state, LOW);
   digitalWrite(CB_ready, LOW);
+
+  
 }
 
 // LOOO...P.............................
 //======================================
 void loop() {
 
-   if (!digitalRead(CB_closeCmd))
-      digitalWrite(CB_state, HIGH);
-      
-   if (!digitalRead(CB_openCmd))
-      digitalWrite(CB_state, LOW);  
+ CB1.Monitoring();
 
-
-/* 
-  delay(500);                       // wait for a second */
+  delay(1);
 }
