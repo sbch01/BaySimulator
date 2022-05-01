@@ -1,7 +1,6 @@
 /*
   BaySimolator is open source device wich simulate 1 circuit braker and 4 switches.
   This tool is used for simulating in lab conditions behaivor of primariy equipment. During relay protection test.
-  
 */
 
 
@@ -25,7 +24,7 @@ class CircuitBraker  {
  
   public:
 
-  //Constructor
+  // Constructor
   CircuitBraker (uint8_t clCmd, uint8_t opCmd, uint8_t state, uint8_t ready){
 
     _closeCmdPin = clCmd; //Pass close command pin
@@ -36,9 +35,11 @@ class CircuitBraker  {
 
   }
 
+  // Method thath cycling in loop and controling CB
   void Monitoring(){
 
     // Close command execute
+    // Condition is charged cb spring "cb ready" and relased open comand "anti pumping algorithm" and set close comand
     if (!digitalRead(_closeCmdPin) & digitalRead(_ReadyPin) & digitalRead(_openCmdPin)){
       digitalWrite(_statePin, HIGH);
       _MotorTime = 0;    
@@ -49,7 +50,7 @@ class CircuitBraker  {
       digitalWrite(_statePin, LOW); 
 
     //Incrase motor counter if cb is discharged
-    if (_MotorTime <= 10000)
+    if (_MotorTime <= 10000) //aproxim 1000 = 1s
       _MotorTime ++;
 
     //If timers reach charge time set cb ready high
@@ -63,11 +64,12 @@ class CircuitBraker  {
   private:
 
     uint8_t _closeCmdPin, _openCmdPin, _statePin, _ReadyPin;
-    double  _MotorTime;
+    double  _MotorTime; //
 
     
 };
 
+//Create object circuit baraker
 CircuitBraker CB1(CB_closeCmd,CB_openCmd,CB_state,CB_ready);
 
 // SETUP INICIALISATION
