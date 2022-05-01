@@ -23,9 +23,9 @@ class CircuitBraker  {
 
   private:
 
-    uint8_t _closeCmdPin, _openCmdPin, _statePin, _ReadyPin;
-    double  _MotorTime; //
-    double  _MotorChargeTime;//
+    uint8_t _closeCmdPin, _openCmdPin, _statePin, _ReadyPin; //Used for pin pass
+    double  _MotorTime; //Used for counting motor time
+    double  _MotorChargeTime;//Used to pass motor time to object
     
 };
 

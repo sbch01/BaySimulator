@@ -11,7 +11,8 @@ CircuitBraker::CircuitBraker (uint8_t clCmd, uint8_t opCmd, uint8_t state, uint8
     _statePin = state; //Pass state pin
     _ReadyPin = ready; //Pass cb ready pin 
     _MotorTime = 0; //Clear motor timer 
-    _MotorChargeTime = charTime; //
+    _MotorChargeTime = charTime; //Pass spring charge time
+
   }
 
 //Method 

@@ -21,7 +21,7 @@ const uint8_t CB_ready = 15;
 
 /* Variables
 ====================================================== */
-double CB_chargeTime = 7000; //Time for charging the spring of braker -> aproxim 1000 = 1s
+double CB_chargeTime = 10000; //Time for charging the spring of braker -> aproxim 1000 = 1s
 
 //======================================================
 
