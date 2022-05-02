@@ -11,6 +11,10 @@
 
 #include "Arduino.h"
 
+//============================================================================================
+//
+//============================================================================================
+
 class CircuitBraker  {
  
   public:
@@ -27,6 +31,28 @@ class CircuitBraker  {
     double  _MotorTime; //Used for counting motor time
     double  _MotorChargeTime;//Used to pass motor time to object
     
+};
+//============================================================================================
+//
+//============================================================================================
+class Disconnector  {
+ 
+  public:
+
+  // Constructor
+  Disconnector (uint8_t clCmd, uint8_t opCmd, uint8_t state, uint8_t motion,double motionTime);
+
+  // Method thath cycling in loop and controling CB
+  void Monitoring();
+
+  private:
+
+    uint8_t _closeCmdPin, _openCmdPin, _statePin, _InMotion; //Used for pin pass
+    double  _motionCounter; //Used for counting motor time
+    double  _transitTime;//Used to pass motor time to object
+    uint32_t _BlinkCounter;//Used for blinking diode during motion
+    uint8_t _SetClose, _SetOpen;//Used for close and open motion trigerring
+
 };
 
 #endif
