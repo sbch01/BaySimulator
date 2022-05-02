@@ -20,13 +20,13 @@ void CircuitBraker::Monitoring(){
 
     // Close command execute
     // Condition is charged cb spring "cb ready" and relased open comand "anti pumping algorithm" and set close comand
-    if (!digitalRead(_closeCmdPin) & digitalRead(_ReadyPin) & digitalRead(_openCmdPin)){
+    if (!digitalRead(_closeCmdPin) & digitalRead(_ReadyPin) & digitalRead(_openCmdPin) & !digitalRead(_statePin)){
       digitalWrite(_statePin, HIGH);
       _MotorTime = 0;    
     } 
 
     //Open command execute
-    if (!digitalRead(_openCmdPin))
+    if (!digitalRead(_openCmdPin) & digitalRead(_closeCmdPin))
       digitalWrite(_statePin, LOW); 
 
     //Incrase motor counter if cb is discharged

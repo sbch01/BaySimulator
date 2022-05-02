@@ -1,5 +1,5 @@
 /*
-  BaySimolator is open source device wich simulate 1 circuit braker and 4 switches.
+  BaySimolator is open source device wich simulate 1 circuit braker and 3 switches.
   This tool is used for simulating in lab conditions behaivor of primariy equipment. During relay protection test.
 */
 
