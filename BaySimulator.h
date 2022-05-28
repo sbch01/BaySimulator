@@ -20,7 +20,7 @@ class CircuitBraker  {
   public:
 
   // Constructor
-  CircuitBraker (uint8_t clCmd, uint8_t opCmd, uint8_t state, uint8_t ready,double charTime);
+  CircuitBraker (uint8_t clCmd, uint8_t opCmd, uint8_t state, uint8_t ready,double charTime,uint32_t OpenTime,uint32_t CloseTime);
 
   // Method thath cycling in loop and controling CB
   void Monitoring();
@@ -30,6 +30,9 @@ class CircuitBraker  {
     uint8_t _closeCmdPin, _openCmdPin, _statePin, _ReadyPin; //Used for pin pass
     double  _MotorTime; //Used for counting motor time
     double  _MotorChargeTime;//Used to pass motor time to object
+    uint32_t _OpenDelay,_CloseDelay;//Used for delay CB Close and Open
+    uint8_t _SetClose, _SetOpen;//Used for close and open  trigerring
+    uint32_t _DelayCounter; //Used to delay CB Close and Open time
     
 };
 //============================================================================================
