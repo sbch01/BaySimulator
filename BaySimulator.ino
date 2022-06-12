@@ -35,10 +35,10 @@ const uint8_t Disc2_motion = 19;
 
 /* Variables
 ====================================================== */
-double CB_chargeTime = 10000; //Time for charging the spring of braker -> aproxim 1000 = 1s
-double Disc_motionTime = 60; //Time for motion disconnector -> aprox 1= 0.25s
-uint32_t CB_CloseDelay = 0; //aprox 1 = 1,5 ms
-uint32_t CB_OpenDelay = 60;
+double CB_chargeTime = 5000; //Time for charging the spring of braker -> aproxim 1000 = 1s
+double Disc_motionTime = 4; //Time for motion disconnector -> aprox 4= 1s
+uint32_t CB_CloseDelay = 35; //aprox 1 = 1 ms
+uint32_t CB_OpenDelay = 20;
 //======================================================
 
 //Create object circuit baraker
@@ -94,5 +94,5 @@ void loop() {
  Disc1.Monitoring();
  Disc2.Monitoring();
 
-  delay(1);
+  delayMicroseconds(850);
 }
