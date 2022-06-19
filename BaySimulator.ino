@@ -35,11 +35,15 @@ const uint8_t Disc2_motion = 19;
 
 /* Variables
 ====================================================== */
-double CB_chargeTime = 5000; //Time for charging the spring of braker -> aproxim 1000 = 1s
-double Disc_motionTime = 4; //Time for motion disconnector -> aprox 4= 1s
+double CB_chargeTime = 10000; //Time for charging the spring of braker -> aproxim 1000 = 1s
+double Disc_motionTime = 20; //Time for motion disconnector -> aprox 4= 1s
 uint32_t CB_CloseDelay = 35; //aprox 1 = 1 ms
 uint32_t CB_OpenDelay = 20;
+
+uint8_t recived_byte; //used for serial communication
 //======================================================
+
+
 
 //Create object circuit baraker
 CircuitBraker CB1(CB_closeCmd,CB_openCmd,CB_state,CB_ready,CB_chargeTime,CB_OpenDelay,CB_CloseDelay);
@@ -53,6 +57,10 @@ Disconnector Disc2(Disc2_closeCmd, Disc2_openCmd, Disc2_state, Disc2_motion, Dis
 // SETUP INICIALISATION
 void setup() {
 
+  Serial.begin(9600);
+  Serial.println("PSS Bay Emulator 1CB-2DC");
+  Serial.println("==============================");
+  
   /* Config direction of ports
      Конфигуриране на посоката портовете  */
   pinMode(LED_BUILTIN, OUTPUT);
@@ -93,6 +101,24 @@ void loop() {
  CB1.Monitoring();
  Disc1.Monitoring();
  Disc2.Monitoring();
+ delayMicroseconds(850);
 
-  delayMicroseconds(850);
+if (Serial.available())
+  {
+
+    recived_byte = Serial.read();
+
+    if (recived_byte == '?') {
+      Serial.println("Help:");
+      Serial.println("===================");
+      Serial.println("Press \'s\' to view timers");
+
+    }
+    
+  }
+
+
+
+
+
 }
