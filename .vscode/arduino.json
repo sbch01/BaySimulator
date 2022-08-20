@@ -2,6 +2,6 @@
     "port": "COM9",
     "board": "arduino:avr:nano",
     "programmer": "arduino:avrisp",
-    "configuration": "cpu=atmega328old",
+    "configuration": "cpu=atmega328",
     "sketch": "BaySimulator.ino"
 }

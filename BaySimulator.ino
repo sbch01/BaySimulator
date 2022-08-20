@@ -57,10 +57,19 @@ Disconnector Disc2(Disc2_closeCmd, Disc2_openCmd, Disc2_state, Disc2_motion, Dis
 // SETUP INICIALISATION
 void setup() {
 
+//Printing srttings on serial port
   Serial.begin(9600);
-  Serial.println("PSS Bay Emulator 1CB-2DC");
+  Serial.println("PSS Bay Emulator 1CB-2DC  ver.0.1");
   Serial.println("==============================");
-  
+  Serial.println("Settings:");
+  Serial.println("------------------------------");
+  Serial.print("1.CB spring charge time: ");  Serial.print(CB_chargeTime/1000,1);Serial.println("s");
+  Serial.print("2.CB close delay: ");  Serial.print(CB_CloseDelay);Serial.println("ms");
+  Serial.print("3.CB open delay: ");  Serial.print(CB_OpenDelay);Serial.println("ms");
+  Serial.print("4.Disconnectors open/close time: ");  Serial.print(Disc_motionTime/4, 1);Serial.println("s");
+  Serial.println("------------------------------");
+  Serial.print("Enter number of parameter to change: ");
+
   /* Config direction of ports
      Конфигуриране на посоката портовете  */
   pinMode(LED_BUILTIN, OUTPUT);
@@ -107,12 +116,13 @@ if (Serial.available())
   {
 
     recived_byte = Serial.read();
+    Serial.write(recived_byte);
 
-    if (recived_byte == '?') {
-      Serial.println("Help:");
-      Serial.println("===================");
-      Serial.println("Press \'s\' to view timers");
-
+    if (recived_byte == '1') {
+      //Serial.print("\33\143"); //clear putty screen
+      Serial.println();
+      Serial.print("Enter CB charge time in secons:");
+      
     }
     
   }
