@@ -5,10 +5,8 @@
 
 #include "BaySimulator.h"
 #include <Arduino.h>
-
+#define CR 13
 //#include <EEPROM.h>
-
-
 
 /* Ports names
    Именуване на входовете и изходите
@@ -40,7 +38,10 @@ double Disc_motionTime = 20; //Time for motion disconnector -> aprox 4= 1s
 uint32_t CB_CloseDelay = 35; //aprox 1 = 1 ms
 uint32_t CB_OpenDelay = 20;
 
+//variables for communication
 uint8_t recived_byte; //used for serial communication
+String inputMsg;
+uint8_t MsgCnt = 0; //Flag for that is chose from menu option
 //======================================================
 
 
@@ -58,17 +59,8 @@ Disconnector Disc2(Disc2_closeCmd, Disc2_openCmd, Disc2_state, Disc2_motion, Dis
 void setup() {
 
 //Printing srttings on serial port
-  Serial.begin(9600);
-  Serial.println("PSS Bay Emulator 1CB-2DC  ver.0.1");
-  Serial.println("==============================");
-  Serial.println("Settings:");
-  Serial.println("------------------------------");
-  Serial.print("1.CB spring charge time: ");  Serial.print(CB_chargeTime/1000,1);Serial.println("s");
-  Serial.print("2.CB close delay: ");  Serial.print(CB_CloseDelay);Serial.println("ms");
-  Serial.print("3.CB open delay: ");  Serial.print(CB_OpenDelay);Serial.println("ms");
-  Serial.print("4.Disconnectors open/close time: ");  Serial.print(Disc_motionTime/4, 1);Serial.println("s");
-  Serial.println("------------------------------");
-  Serial.print("Enter number of parameter to change: ");
+ Serial.begin(9600); 
+ StartMenu();
 
   /* Config direction of ports
      Конфигуриране на посоката портовете  */
@@ -107,28 +99,58 @@ void setup() {
 //======================================
 void loop() {
 
+ //Control cycle of braker and disconnector
  CB1.Monitoring();
  Disc1.Monitoring();
  Disc2.Monitoring();
  delayMicroseconds(850);
 
-if (Serial.available())
-  {
+
+//Control cycle
+if (Serial.available()){
 
     recived_byte = Serial.read();
     Serial.write(recived_byte);
-
-    if (recived_byte == '1') {
+    
+    if(recived_byte == CR){
+      
+      if (inputMsg.equals("1")) {
+      
       //Serial.print("\33\143"); //clear putty screen
       Serial.println();
       Serial.print("Enter CB charge time in secons:");
-      
+      //recived_byte = Serial.read();
+      //Serial.write(recived_byte);
+      }
+      else{
+        Serial.println();
+        Serial.println(inputMsg);
+        inputMsg = "";
+        StartMenu();
+      }   
     }
-    
+    else{
+      inputMsg = inputMsg + recived_byte;
+    }
+  
   }
 
+}
 
+//Custom function for communication
 
+void StartMenu(){
 
+  //Serial.print("\33\143"); //clear putty screen
+  Serial.println("PSS Bay Emulator 1CB-2DC  ver.0.1");
+  Serial.println("==============================");
+  Serial.println("Settings:");
+  Serial.println("------------------------------");
+  Serial.print("1.CB spring charge time: ");  Serial.print(CB_chargeTime/1000,1);Serial.println("s");
+  Serial.print("2.CB close delay: ");  Serial.print(CB_CloseDelay);Serial.println("ms");
+  Serial.print("3.CB open delay: ");  Serial.print(CB_OpenDelay);Serial.println("ms");
+  Serial.print("4.Disconnectors open/close time: ");  Serial.print(Disc_motionTime/4, 1);Serial.println("s");
+  Serial.println("------------------------------");
+  Serial.print("Enter number of parameter to change: ");
 
 }
