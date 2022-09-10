@@ -39,9 +39,11 @@ uint32_t CB_CloseDelay = 35; //aprox 1 = 1 ms
 uint32_t CB_OpenDelay = 20;
 
 //variables for communication
-uint8_t recived_byte; //used for serial communication
-String inputMsg;
+char recived_byte; //used for serial communication
+char inputMsg [40]; //used for buffer for input from user keybord
+unsigned int RcvCnt = 0; //used for couting input msg
 uint8_t MsgCnt = 0; //Flag for that is chose from menu option
+uint8_t menuDept = 0;
 //======================================================
 
 
@@ -110,38 +112,74 @@ void loop() {
 if (Serial.available()){
 
     recived_byte = Serial.read();
-    Serial.write(recived_byte);
     
+    
+    if (recived_byte >= '0' and recived_byte <= '9'){
+      inputMsg[RcvCnt]=recived_byte;
+      Serial.write(recived_byte);
+      RcvCnt++;
+    }
+    
+      
+       
     if(recived_byte == CR){
       
-      if (inputMsg.equals("1")) {
       
-      //Serial.print("\33\143"); //clear putty screen
-      Serial.println();
-      Serial.print("Enter CB charge time in secons:");
-      //recived_byte = Serial.read();
-      //Serial.write(recived_byte);
-      }
-      else{
+      if (inputMsg [0] == '1') {
+      
+        Serial.print("\33\143"); //clear putty screen
         Serial.println();
-        Serial.println(inputMsg);
-        inputMsg = "";
+        Serial.print("Enter CB charge time in secons:");
+        RcvCnt=0;
+
+      }
+
+      else if (inputMsg [0] == '2') {
+      
+        Serial.print("\33\143"); //clear putty screen
+        Serial.println();
+        Serial.print("Enter CB close delay in miliseconds:");
+        RcvCnt=0;
+
+      }
+
+      else if (inputMsg [0] == '3') {
+      
+        Serial.print("\33\143"); //clear putty screen
+        Serial.println();
+        Serial.print("Enter CB open delay in miliseconds:");
+        RcvCnt=0;
+      
+      }
+
+      else if (inputMsg [0] == '4') {
+      
+        Serial.print("\33\143"); //clear putty screen
+        Serial.println();
+        Serial.print("Enter disconnector open/close time in seconds:");
+        RcvCnt=0;
+      
+      }
+
+      else{
+
+        Serial.println();
         StartMenu();
+        RcvCnt=0;
       }   
-    }
-    else{
-      inputMsg = inputMsg + recived_byte;
+
     }
   
-  }
+  
+  }//end of recive control
 
-}
+}//end of loop
 
 //Custom function for communication
 
 void StartMenu(){
 
-  //Serial.print("\33\143"); //clear putty screen
+  Serial.print("\33\143"); //clear putty screen
   Serial.println("PSS Bay Emulator 1CB-2DC  ver.0.1");
   Serial.println("==============================");
   Serial.println("Settings:");
