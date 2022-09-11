@@ -6,6 +6,7 @@
 #include "BaySimulator.h"
 #include <Arduino.h>
 #define CR 13
+#define ESC 27
 //#include <EEPROM.h>
 
 /* Ports names
@@ -43,7 +44,8 @@ char recived_byte; //used for serial communication
 char inputMsg [40]; //used for buffer for input from user keybord
 unsigned int RcvCnt = 0; //used for couting input msg
 uint8_t MsgCnt = 0; //Flag for that is chose from menu option
-uint8_t menuDept = 0;
+uint8_t MenuDept = 0;//For menu selection
+uint8_t ParameterSelect = 0; 
 //======================================================
 
 
@@ -108,12 +110,22 @@ void loop() {
  delayMicroseconds(850);
 
 
-//Control cycle
+//Control cycle of reciving input from UART
 if (Serial.available()){
 
+    //recive buffer is full read it
     recived_byte = Serial.read();
     
-    
+    //if press escape
+    if (recived_byte == ESC){
+        RcvCnt=0;
+        MenuDept = 0;
+        inputMsg [0] = '0';
+        Serial.println();
+        StartMenu();
+    }
+
+    //control input from user fir digit 
     if (recived_byte >= '0' and recived_byte <= '9'){
       inputMsg[RcvCnt]=recived_byte;
       Serial.write(recived_byte);
@@ -121,52 +133,115 @@ if (Serial.available()){
     }
     
       
-       
+    //Pressing Enter key   
     if(recived_byte == CR){
       
-      
-      if (inputMsg [0] == '1') {
-      
-        Serial.print("\33\143"); //clear putty screen
-        Serial.println();
-        Serial.print("Enter CB charge time in secons:");
-        RcvCnt=0;
+    if(MenuDept == 0){ 
+
+        if (inputMsg [0] == '1') {
+        
+          Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print("Enter CB charge time in secons:");
+          RcvCnt=0;
+          MenuDept=1;
+          ParameterSelect = 1;
+
+        }
+
+        else if (inputMsg [0] == '2') {
+        
+          Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print("Enter CB close delay in miliseconds:");
+          RcvCnt=0;
+          MenuDept=1;
+          ParameterSelect = 2;
+
+        }
+
+        else if (inputMsg [0] == '3') {
+        
+          Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print("Enter CB open delay in miliseconds:");
+          RcvCnt=0;
+          MenuDept=1;
+          ParameterSelect = 3;
+        
+        }
+
+        else if (inputMsg [0] == '4') {
+        
+          Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print("Enter disconnector open/close time in seconds:");
+          RcvCnt=0;
+          MenuDept=1;
+          ParameterSelect = 4;
+        
+        }
+
+        else{
+
+          Serial.println();
+          StartMenu();
+          RcvCnt=0;
+        } 
+
+      } 
+
+      else if (MenuDept ==1){
+
+        switch (ParameterSelect)
+        {
+        case 1:
+          
+          Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print("You change the parameter 1. Press enter to clear :");
+          RcvCnt=0;
+          MenuDept = 0;
+          inputMsg [0] = '0';
+          break;
+
+        case 2:
+          
+          Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print("You change the parameter 2. Press enter to clear :");
+          RcvCnt=0;
+          MenuDept = 0;
+          inputMsg [0] = '0';
+          break;
+
+        case 3:
+          
+          Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print("You change the parameter 3. Press enter to clear :");
+          RcvCnt=0;
+          MenuDept = 0;
+          inputMsg [0] = '0';
+          break;
+
+        case 4:
+          
+          Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print("You change the parameter 4. Press enter to clear :");
+          RcvCnt=0;
+          MenuDept = 0;
+          inputMsg [0] = '0';
+          break;
+
+        default:
+          break;
+
+        }
+
 
       }
-
-      else if (inputMsg [0] == '2') {
-      
-        Serial.print("\33\143"); //clear putty screen
-        Serial.println();
-        Serial.print("Enter CB close delay in miliseconds:");
-        RcvCnt=0;
-
-      }
-
-      else if (inputMsg [0] == '3') {
-      
-        Serial.print("\33\143"); //clear putty screen
-        Serial.println();
-        Serial.print("Enter CB open delay in miliseconds:");
-        RcvCnt=0;
-      
-      }
-
-      else if (inputMsg [0] == '4') {
-      
-        Serial.print("\33\143"); //clear putty screen
-        Serial.println();
-        Serial.print("Enter disconnector open/close time in seconds:");
-        RcvCnt=0;
-      
-      }
-
-      else{
-
-        Serial.println();
-        StartMenu();
-        RcvCnt=0;
-      }   
 
     }
   
@@ -175,8 +250,9 @@ if (Serial.available()){
 
 }//end of loop
 
-//Custom function for communication
 
+//Custom function for communication
+//---------------------------------------------------------
 void StartMenu(){
 
   Serial.print("\33\143"); //clear putty screen
