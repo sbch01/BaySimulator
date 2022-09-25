@@ -24,6 +24,14 @@ CircuitBraker::CircuitBraker (uint8_t clCmd, uint8_t opCmd, uint8_t state, uint8
   }
 
 //Method 
+void CircuitBraker:: getParameters (double charTime,uint32_t OpenTime,uint32_t CloseTime){
+
+    _MotorChargeTime = charTime; //Pass spring charge time
+    _OpenDelay = OpenTime;//Pass open delay 
+    _CloseDelay = CloseTime;//Pass close dealay
+
+}
+
 void CircuitBraker::Monitoring(){
 
     // Close command execute
@@ -100,7 +108,11 @@ Disconnector::Disconnector (uint8_t clCmd, uint8_t opCmd, uint8_t state, uint8_t
 
   }
 
-//Method 
+//Method
+void Disconnector::getParameters(double motionTime){
+  _transitTime = motionTime; //Pass spring charge time
+}
+
 void Disconnector::Monitoring(){
 
     if(!digitalRead(_closeCmdPin) & !digitalRead(_statePin) & digitalRead(_openCmdPin)){

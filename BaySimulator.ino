@@ -5,9 +5,9 @@
 
 #include "BaySimulator.h"
 #include <Arduino.h>
+#include <EEPROM.h>
 #define CR 13
 #define ESC 27
-//#include <EEPROM.h>
 
 /* Ports names
    Именуване на входовете и изходите
@@ -34,10 +34,12 @@ const uint8_t Disc2_motion = 19;
 
 /* Variables
 ====================================================== */
-double CB_chargeTime = 10000; //Time for charging the spring of braker -> aproxim 1000 = 1s
-double Disc_motionTime = 20; //Time for motion disconnector -> aprox 4= 1s
-uint32_t CB_CloseDelay = 35; //aprox 1 = 1 ms
-uint32_t CB_OpenDelay = 20;
+
+//variables for emulated equipment
+double CB_chargeTime; //Time for charging the spring of braker -> aproxim 1000 = 1s
+double Disc_motionTime; //Time for motion disconnector -> aprox 4= 1s
+uint32_t CB_CloseDelay; //aprox 1 = 1 ms
+uint32_t CB_OpenDelay;
 
 //variables for communication
 char recived_byte; //used for serial communication
@@ -45,7 +47,8 @@ char inputMsg [40]; //used for buffer for input from user keybord
 unsigned int RcvCnt = 0; //used for couting input msg
 uint8_t MsgCnt = 0; //Flag for that is chose from menu option
 uint8_t MenuDept = 0;//For menu selection
-uint8_t ParameterSelect = 0; 
+uint8_t ParameterSelect = 0;
+uint32_t ParameterTemp;//temporary 
 //======================================================
 
 
@@ -59,9 +62,37 @@ Disconnector Disc1(Disc1_closeCmd, Disc1_openCmd, Disc1_state, Disc1_motion, Dis
 //Create object disconnector 1
 Disconnector Disc2(Disc2_closeCmd, Disc2_openCmd, Disc2_state, Disc2_motion, Disc_motionTime);
 
+
+
 // SETUP INICIALISATION
 void setup() {
 
+//****************Uncoment for first load******************
+//                EEPROM whrite
+//*********************************************************
+/* 
+  CB_chargeTime = 10000;
+  Disc_motionTime = 20;
+  CB_CloseDelay = 35;
+  CB_OpenDelay = 20;
+
+  EEPROM.put(0,CB_chargeTime);
+  EEPROM.put(10,Disc_motionTime);
+  EEPROM.put(20,CB_CloseDelay);
+  EEPROM.put(30,CB_OpenDelay); */
+ //*********************************************************
+ 
+  //Read parameters from EEPROM
+  EEPROM.get(0, CB_chargeTime);
+  EEPROM.get(10,Disc_motionTime);
+  EEPROM.get(20,CB_CloseDelay);
+  EEPROM.get(30,CB_OpenDelay);
+
+  //Pass parameters to objects
+  CB1.getParameters(CB_chargeTime,CB_OpenDelay,CB_CloseDelay);
+  Disc1.getParameters(Disc_motionTime);
+  Disc2.getParameters(Disc_motionTime);
+  
 //Printing srttings on serial port
  Serial.begin(9600); 
  StartMenu();
@@ -95,7 +126,6 @@ void setup() {
   digitalWrite(Disc1_motion,LOW);
   digitalWrite(Disc2_state,LOW);
   digitalWrite(Disc2_motion,LOW);
-
   
 }
 
@@ -116,7 +146,7 @@ if (Serial.available()){
     //recive buffer is full read it
     recived_byte = Serial.read();
     
-    //if press escape
+    //if press escape cancel evry dept of menu
     if (recived_byte == ESC){
         RcvCnt=0;
         MenuDept = 0;
@@ -154,25 +184,21 @@ if (Serial.available()){
             if (inputMsg [0] == '1') {
             
               PromptParamScreen("Enter CB charge time in secons:",1);
-          
             }
 
             else if (inputMsg [0] == '2') {
 
               PromptParamScreen("Enter CB close delay in miliseconds:",2);
-
             }
 
             else if (inputMsg [0] == '3') {
 
               PromptParamScreen("Enter CB open delay in miliseconds:",3); 
-            
             }
 
             else if (inputMsg [0] == '4') {
 
               PromptParamScreen("Enter disconnector open/close time in seconds:",4);
-            
             }
 
             else{
@@ -193,6 +219,16 @@ if (Serial.available()){
               Serial.print("\33\143"); //clear putty screen
               Serial.println();
               Serial.print("You change the parameter 1. Press enter to clear :");
+
+              //--------------difrent segment
+              inputMsg[RcvCnt]='\0';
+
+              ParameterTemp = atoi(inputMsg);
+              CB_chargeTime = 1000 * ParameterTemp;
+              EEPROM.put(0, CB_chargeTime);
+
+              //------------------------------
+              
               RcvCnt=0;
               MenuDept = 0;
               inputMsg [0] = '0';
@@ -276,3 +312,10 @@ void PromptParamScreen(char* promptText, unsigned int parmNum){
           ParameterSelect = parmNum; 
 
 }
+
+//Sub routine for changing the selected parameter
+/* void ParameterChange (unsigned int paramNum){
+
+ 
+
+} */

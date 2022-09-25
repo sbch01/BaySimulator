@@ -24,6 +24,7 @@ class CircuitBraker  {
 
   // Method thath cycling in loop and controling CB
   void Monitoring();
+  void getParameters(double charTime,uint32_t OpenTime,uint32_t CloseTime); 
 
   private:
 
@@ -47,6 +48,7 @@ class Disconnector  {
 
   // Method thath cycling in loop and controling CB
   void Monitoring();
+  void getParameters(double motionTime);
 
   private:
 
