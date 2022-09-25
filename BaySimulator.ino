@@ -125,123 +125,116 @@ if (Serial.available()){
         StartMenu();
     }
 
-    //control input from user fir digit 
+    //control input from user recive only digit 
     if (recived_byte >= '0' and recived_byte <= '9'){
-      inputMsg[RcvCnt]=recived_byte;
-      Serial.write(recived_byte);
-      RcvCnt++;
+      
+      //interlock to iput more then one digit when you are on the main menu
+      if (MenuDept ==0 && RcvCnt == 0){
+          inputMsg[RcvCnt]=recived_byte;
+          Serial.write(recived_byte);
+          RcvCnt++;
+      }
+
+      //relase interlock above
+      else if (MenuDept == 1){
+          inputMsg[RcvCnt]=recived_byte;
+          Serial.write(recived_byte);
+          RcvCnt++;
+      }
+      
     }
     
       
     //Pressing Enter key   
     if(recived_byte == CR){
       
-    if(MenuDept == 0){ 
+    //MenuDept 0 is a start screen
+        if(MenuDept == 0){ 
 
-        if (inputMsg [0] == '1') {
-        
-          Serial.print("\33\143"); //clear putty screen
-          Serial.println();
-          Serial.print("Enter CB charge time in secons:");
-          RcvCnt=0;
-          MenuDept=1;
-          ParameterSelect = 1;
-
-        }
-
-        else if (inputMsg [0] == '2') {
-        
-          Serial.print("\33\143"); //clear putty screen
-          Serial.println();
-          Serial.print("Enter CB close delay in miliseconds:");
-          RcvCnt=0;
-          MenuDept=1;
-          ParameterSelect = 2;
-
-        }
-
-        else if (inputMsg [0] == '3') {
-        
-          Serial.print("\33\143"); //clear putty screen
-          Serial.println();
-          Serial.print("Enter CB open delay in miliseconds:");
-          RcvCnt=0;
-          MenuDept=1;
-          ParameterSelect = 3;
-        
-        }
-
-        else if (inputMsg [0] == '4') {
-        
-          Serial.print("\33\143"); //clear putty screen
-          Serial.println();
-          Serial.print("Enter disconnector open/close time in seconds:");
-          RcvCnt=0;
-          MenuDept=1;
-          ParameterSelect = 4;
-        
-        }
-
-        else{
-
-          Serial.println();
-          StartMenu();
-          RcvCnt=0;
-        } 
-
-      } 
-
-      else if (MenuDept ==1){
-
-        switch (ParameterSelect)
-        {
-        case 1:
+            if (inputMsg [0] == '1') {
+            
+              PromptParamScreen("Enter CB charge time in secons:",1);
           
-          Serial.print("\33\143"); //clear putty screen
-          Serial.println();
-          Serial.print("You change the parameter 1. Press enter to clear :");
-          RcvCnt=0;
-          MenuDept = 0;
-          inputMsg [0] = '0';
-          break;
+            }
 
-        case 2:
-          
-          Serial.print("\33\143"); //clear putty screen
-          Serial.println();
-          Serial.print("You change the parameter 2. Press enter to clear :");
-          RcvCnt=0;
-          MenuDept = 0;
-          inputMsg [0] = '0';
-          break;
+            else if (inputMsg [0] == '2') {
 
-        case 3:
-          
-          Serial.print("\33\143"); //clear putty screen
-          Serial.println();
-          Serial.print("You change the parameter 3. Press enter to clear :");
-          RcvCnt=0;
-          MenuDept = 0;
-          inputMsg [0] = '0';
-          break;
+              PromptParamScreen("Enter CB close delay in miliseconds:",2);
 
-        case 4:
-          
-          Serial.print("\33\143"); //clear putty screen
-          Serial.println();
-          Serial.print("You change the parameter 4. Press enter to clear :");
-          RcvCnt=0;
-          MenuDept = 0;
-          inputMsg [0] = '0';
-          break;
+            }
 
-        default:
-          break;
+            else if (inputMsg [0] == '3') {
 
-        }
+              PromptParamScreen("Enter CB open delay in miliseconds:",3); 
+            
+            }
+
+            else if (inputMsg [0] == '4') {
+
+              PromptParamScreen("Enter disconnector open/close time in seconds:",4);
+            
+            }
+
+            else{
+
+              Serial.println();
+              StartMenu();
+              RcvCnt=0;
+            } 
+
+          } 
+
+          else if (MenuDept ==1){
+
+            switch (ParameterSelect)
+            {
+            case 1:
+              
+              Serial.print("\33\143"); //clear putty screen
+              Serial.println();
+              Serial.print("You change the parameter 1. Press enter to clear :");
+              RcvCnt=0;
+              MenuDept = 0;
+              inputMsg [0] = '0';
+              break;
+
+            case 2:
+              
+              Serial.print("\33\143"); //clear putty screen
+              Serial.println();
+              Serial.print("You change the parameter 2. Press enter to clear :");
+              RcvCnt=0;
+              MenuDept = 0;
+              inputMsg [0] = '0';
+              break;
+
+            case 3:
+              
+              Serial.print("\33\143"); //clear putty screen
+              Serial.println();
+              Serial.print("You change the parameter 3. Press enter to clear :");
+              RcvCnt=0;
+              MenuDept = 0;
+              inputMsg [0] = '0';
+              break;
+
+            case 4:
+              
+              Serial.print("\33\143"); //clear putty screen
+              Serial.println();
+              Serial.print("You change the parameter 4. Press enter to clear :");
+              RcvCnt=0;
+              MenuDept = 0;
+              inputMsg [0] = '0';
+              break;
+
+            default:
+              break;
+
+            }
 
 
-      }
+          }
 
     }
   
@@ -253,6 +246,9 @@ if (Serial.available()){
 
 //Custom function for communication
 //---------------------------------------------------------
+
+
+//Display main menu in putty
 void StartMenu(){
 
   Serial.print("\33\143"); //clear putty screen
@@ -266,5 +262,17 @@ void StartMenu(){
   Serial.print("4.Disconnectors open/close time: ");  Serial.print(Disc_motionTime/4, 1);Serial.println("s");
   Serial.println("------------------------------");
   Serial.print("Enter number of parameter to change: ");
+
+}
+
+//Sub routine for prompt parameter
+void PromptParamScreen(char* promptText, unsigned int parmNum){
+
+   Serial.print("\33\143"); //clear putty screen
+          Serial.println();
+          Serial.print(promptText);   //Print on screen parameter prompt text
+          RcvCnt=0;                   //prepare recive buffer for new string 
+          MenuDept=1;                 //Choise second menu dept parameters
+          ParameterSelect = parmNum; 
 
 }
