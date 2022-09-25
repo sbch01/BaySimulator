@@ -37,7 +37,7 @@ const uint8_t Disc2_motion = 19;
 
 //variables for emulated equipment
 double CB_chargeTime; //Time for charging the spring of braker -> aproxim 1000 = 1s
-double Disc_motionTime; //Time for motion disconnector -> aprox 4= 1s
+double Disc_motionTime; //Time for motion disconnector -> aprox 4 = 1s
 uint32_t CB_CloseDelay; //aprox 1 = 1 ms
 uint32_t CB_OpenDelay;
 
@@ -183,22 +183,22 @@ if (Serial.available()){
 
             if (inputMsg [0] == '1') {
             
-              PromptParamScreen("Enter CB charge time in secons:",1);
+              PromptParamScreen("[From 1 to 30s]\nEnter CB charge time in secons:",1);
             }
 
             else if (inputMsg [0] == '2') {
 
-              PromptParamScreen("Enter CB close delay in miliseconds:",2);
+              PromptParamScreen("[From 5 to 150ms]\nEnter CB close delay in miliseconds:",2);
             }
 
             else if (inputMsg [0] == '3') {
 
-              PromptParamScreen("Enter CB open delay in miliseconds:",3); 
+              PromptParamScreen("[From 5 to 150ms]\nEnter CB open delay in miliseconds:",3); 
             }
 
             else if (inputMsg [0] == '4') {
 
-              PromptParamScreen("Enter disconnector open/close time in seconds:",4);
+              PromptParamScreen("[From 5 to 120 s]\nEnter disconnector open/close time in seconds:",4);
             }
 
             else{
@@ -214,54 +214,76 @@ if (Serial.available()){
 
             switch (ParameterSelect)
             {
-            case 1:
+            case 1://CB Charge time
+            //===========================================================
               
-              Serial.print("\33\143"); //clear putty screen
-              Serial.println();
-              Serial.print("You change the parameter 1. Press enter to clear :");
-
-              //--------------difrent segment
               inputMsg[RcvCnt]='\0';
-
-              ParameterTemp = atoi(inputMsg);
-              CB_chargeTime = 1000 * ParameterTemp;
-              EEPROM.put(0, CB_chargeTime);
-
-              //------------------------------
+              ParameterTemp = atoi(inputMsg); //Convert striong to digit
               
-              RcvCnt=0;
-              MenuDept = 0;
-              inputMsg [0] = '0';
+              if (ParameterValidation(ParameterTemp,30,1)){
+
+                CB_chargeTime = 1000 * ParameterTemp;
+                EEPROM.put(0, CB_chargeTime);
+                ParamSuccess();
+
+              }
+              else{
+                ParamError();
+              }
               break;
 
-            case 2:
+            case 2://CB Close delay
+            //===========================================================
+
+              inputMsg[RcvCnt]='\0';
+              ParameterTemp = atoi(inputMsg); //Convert striong to digit
               
-              Serial.print("\33\143"); //clear putty screen
-              Serial.println();
-              Serial.print("You change the parameter 2. Press enter to clear :");
-              RcvCnt=0;
-              MenuDept = 0;
-              inputMsg [0] = '0';
+              if (ParameterValidation(ParameterTemp,150,5)){
+
+                CB_CloseDelay = ParameterTemp;
+                EEPROM.put(20, CB_CloseDelay);
+                ParamSuccess();
+              }
+              else{
+                ParamError();
+              }
+
+              break;
+              
+
+            case 3://CB Open delay
+            //============================================================
+              
+              inputMsg[RcvCnt]='\0';
+              ParameterTemp = atoi(inputMsg); //Convert striong to digit
+              
+              if (ParameterValidation(ParameterTemp,150,5)){
+
+                CB_OpenDelay = ParameterTemp;
+                EEPROM.put(30, CB_OpenDelay);
+                ParamSuccess();
+              }
+              else{
+                ParamError();
+              }
               break;
 
-            case 3:
+            case 4://Disconnector open/close time
+            //============================================================
+              inputMsg[RcvCnt]='\0';
+              ParameterTemp = atoi(inputMsg); //Convert striong to digit
               
-              Serial.print("\33\143"); //clear putty screen
-              Serial.println();
-              Serial.print("You change the parameter 3. Press enter to clear :");
-              RcvCnt=0;
-              MenuDept = 0;
-              inputMsg [0] = '0';
-              break;
+              if (ParameterValidation(ParameterTemp,120,5)){
 
-            case 4:
+                Disc_motionTime = 4 * ParameterTemp;
+                EEPROM.put(10, Disc_motionTime);
+                ParamSuccess();
+
+              }
+              else{
+                ParamError();
+              }
               
-              Serial.print("\33\143"); //clear putty screen
-              Serial.println();
-              Serial.print("You change the parameter 4. Press enter to clear :");
-              RcvCnt=0;
-              MenuDept = 0;
-              inputMsg [0] = '0';
               break;
 
             default:
@@ -313,9 +335,38 @@ void PromptParamScreen(char* promptText, unsigned int parmNum){
 
 }
 
-//Sub routine for changing the selected parameter
-/* void ParameterChange (unsigned int paramNum){
+//Sub routine for validaiting the input
+boolean ParameterValidation (uint32_t ParamValue,uint32_t ParamMax, uint32_t ParamMin){
 
- 
+  if (ParamValue < ParamMin || ParamValue > ParamMax){
+      return false;
+  }
 
-} */
+  else{
+      return true;
+  }  
+} 
+
+//Sub routine for success parameter change
+void ParamSuccess(){
+
+  Serial.print("\33\143"); //clear putty screen
+  Serial.println();
+  Serial.print("Your parameter is changed press Enter to reboot");
+  RcvCnt=0;
+  MenuDept = 0;
+  inputMsg [0] = '0';
+
+}
+
+void ParamError(){
+
+  Serial.print("\33\143"); //clear putty screen
+  Serial.println();
+  Serial.print("Your input is out of range, Press Enter for main menu.");
+  RcvCnt=0;
+  MenuDept = 0;
+  inputMsg [0] = '0';
+}
+
+
