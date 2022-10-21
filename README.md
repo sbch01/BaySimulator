@@ -8,4 +8,6 @@ It is very useful tool for testing, before you go on site. You can check  your c
 - trip circuit supervision;
 - close and open timer filters.
 
-## Featuers
+## Settings:
+### Circuit braker
+### Disconnector
