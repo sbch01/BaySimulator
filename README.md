@@ -10,4 +10,9 @@ It is very useful tool for testing, before you go on site. You can check  your c
 
 ## Settings:
 ### Circuit braker
+```
+- Open time
+- Close time
+- Spring charge time
+```
 ### Disconnector
